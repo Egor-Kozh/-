@@ -9,17 +9,23 @@ namespace hey
         static void Main()
         {
             Console.Clear();
-            Console.WriteLine("==Студенты==\n\nЗаполните список студентов");
-            A1();
+            List<Stud> stud = new List<Stud>();
+            int q = 0;
+            while(true)
+            {
+                Console.WriteLine("==Студенты==\n\n1) Заполните список студентов\n2) Выборка по...");
+                int n = Convert.ToInt32(Console.ReadLine());
+                if (n == 1) { A1(ref stud, ref q); }
+                else if (n == 2 && q > 0) { A2(stud); }
+                else { Console.WriteLine("Нет данных, заполните список студентов"); Console.ReadKey(); Main(); }
+            }
         }
-
-        static void A1()
+        static void A1(ref List<Stud> stud, ref int q)
         {
             Console.Clear();
             Console.WriteLine("==Заполнение==\n");
             Console.Write("Введите количество студентов: ");
             int n = Convert.ToInt32(Console.ReadLine());
-            Stud[] stud = new Stud[n];
             for (int i = 0; i < n; i++)
             {
                 Console.Write("ФИО: ");
@@ -37,68 +43,75 @@ namespace hey
                 int k;
                 k = Convert.ToInt32(Console.ReadLine());
                 string[] subj = new string[k];
-                for(int j = 0; j < k; j++)
+                for (int j = 0; j < k; j++)
                 {
                     Console.Write("Предмет: ");
                     subj[j] = Console.ReadLine();
                 }
 
                 int[] score = new int[k];
-                for(int j = 0; j < k; j++)
+                for (int j = 0; j < k; j++)
                 {
                     Console.Write($"Оценка по {subj[j]}: ");
                     score[j] = Convert.ToInt32(Console.ReadLine());
                 }
 
-                stud[i] = new Stud(fio, day, month, year, group, subj, score);
+                stud.Add(new Stud(fio, day, month, year, group, subj, score));
 
                 Console.WriteLine();
 
             }
-            A2(stud);
+            q++;
+            Console.Clear();
         }
 
-        static void A2(Stud[] stud)
+        static void A2(List<Stud> stud)
         {
             Console.Clear();
-            Console.WriteLine("Сделать выбору студентов по:\n1) Группе\n2) Должникам\n3) Отличникам\n4) Моложе 20-ти лет");
+            Console.WriteLine("Сделать выбору студентов по:\n1) Группе\n2) Должникам\n3) Отличникам\n4) Моложе 20-ти лет\n\nВ меню...(5)");
             int l;
             l = Convert.ToInt32(Console.ReadLine());
             if (l == 1) { A3(stud); }
             else if (l == 2) { A4(stud); }
             else if (l == 3) { A5(stud); }
-            else { A6(stud); }
+            else if(l == 4) {A6(stud); }
+            else if (l == 5) { Main(); }
             Console.WriteLine("В меню...(1)\nПродолжить выборку по...(2)");
             int n;
             if ((n = Convert.ToInt32(Console.ReadLine())) == 1) { Main(); }
             else { A2(stud); }
         }
 
-        static void A3(Stud[] stud)
+        static void A3(List<Stud> stud)
         {
             Console.Clear();
             Console.Write("Введите группу: ");
             string group;
             group = Console.ReadLine();
             List<string> name = new List<string>();
-            for (int i = 0; i < stud.Length; i++)
+            for (int i = 0; i < stud.Count; i++)
             {
                 if (stud[i].Group == group)
                 {
                     name.Add(stud[i].FIO);
                 }
             }
-            for (int i = 0; i < name.Count; i++)
+
+            if (name.Count > 0)
             {
-                Console.WriteLine($"{i + 1}) {name[i]}");
+                for (int i = 0; i < name.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}) {name[i]}");
+                }
             }
+            else { Console.WriteLine("Данной группы нет"); }
 
         }
-        static void A4(Stud[] stud)
+        static void A4(List<Stud> stud)
         {
             Console.Clear();
             List<string> name = new List<string>();
-            for (int i = 0; i < stud.Length; i++)
+            for (int i = 0; i < stud.Count; i++)
             {
                 for (int j = 0; j < stud[i].Score.Length; j++)
                 {
@@ -113,11 +126,11 @@ namespace hey
                 Console.WriteLine($"{i + 1}) {name[i]}");
             }
         }
-        static void A5(Stud[] stud)
+        static void A5(List<Stud> stud)
         {
             Console.Clear();
             List<string> name = new List<string>();
-            for (int i = 0; i < stud.Length; i++)
+            for (int i = 0; i < stud.Count; i++)
             {
                 int k = 0;
                 for (int j = 0; j < stud[i].Score.Length; j++)
@@ -127,7 +140,7 @@ namespace hey
                         k++;
                     }
                 }
-                if(k == stud[i].Score.Length)
+                if (k == stud[i].Score.Length)
                 {
                     name.Add(stud[i].FIO);
                 }
@@ -138,23 +151,21 @@ namespace hey
             }
         }
 
-        static void A6(Stud[] stud)
+        static void A6(List<Stud> stud)
         {
             Console.Clear();
             List<string> name = new List<string>();
-            for (int i = 0; i < stud.Length; i++)
+            for (int i = 0; i < stud.Count; i++)
             {
-                if (stud[i].Year > 2003)
+                if (stud[i].Year >= 2003)
                 {
-                    name.Add(stud[i].FIO);
-                }
-                else if (stud[i].Month > 2 && stud[i].Year == 2003)
-                {
-                    name.Add(stud[i].FIO);
-                }
-                else if (stud[i].Day > 9)
-                {
-                    name.Add(stud[i].FIO);
+                    if (stud[i].Month >= 2)
+                    {
+                        if (stud[i].Day > 9)
+                        {
+                            name.Add(stud[i].FIO);
+                        }
+                    }
                 }
 
 
